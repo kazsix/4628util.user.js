@@ -24,11 +24,9 @@ function main() {
 
   $(function() {
 
-    var formId = $("input[name=application_form_master_id]").val();
-
     var customButtonHTML = '<div>\
                                 <input class="btn_custom" id="btn_custom_yesterday" type="button" value=" 昨日 ">\
-                                <input class="btn_custom" id="btn_custom_today" type="button" value=" 今日 " onclick="">\
+                                <input class="btn_custom" id="btn_custom_today" type="button" value=" 今日 ">\
                             </div>';
     $("#submit_form table").eq(4).before(customButtonHTML);
 
@@ -40,6 +38,8 @@ function main() {
         changeDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
       }
     });
+
+    var formId = $("input[name=application_form_master_id]").val();
 
     // 時間外申請とタイムカード訂正の場合
     if (formId == "1" || formId == "4") {
@@ -55,7 +55,7 @@ function main() {
       }
     
       // 残業開始時間セット
-      if ($('.user_name').html().match(/東京|京都/)) {
+      if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
         // 東京、京都タイム
         var defaultHourFrom = "19";
       } else {
@@ -68,7 +68,7 @@ function main() {
       $('select[name=value_time_001_Minute]').val(defaultMinute);
 
       // 申請内容(残業終了 or 退社)セット
-      $('select[name=reflect_item_id_002] option:last').attr("selected", "selected"); // 残業終了 or 退社
+      $('select[name=reflect_item_id_002] option:last').attr("selected", "selected");
 
       $('select[name=value_time_002_Hour]').focus();
     }
