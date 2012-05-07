@@ -2,7 +2,9 @@
 // @name           4628 Utility Scripts
 // @namespace      https://github.com/kazsix
 // @description    日付の自動入力、カスタムボタンの追加など、4628システムの入力を支援
+// @include        http://www.4628.jp/*
 // @include        https://www.4628.jp/*
+// @match          http://www.4628.jp/*
 // @match          https://www.4628.jp/*
 // ==/UserScript==
 
