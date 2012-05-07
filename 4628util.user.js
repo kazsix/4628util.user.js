@@ -57,10 +57,10 @@ function main() {
       // 残業開始時間セット
       if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
         // 東京、京都タイム
-        var defaultHourFrom = "19";
+        var defaultHourFrom = (formId == "4") ? "10" : "19";
       } else {
         // 福岡タイム
-        var defaultHourFrom = "18";
+        var defaultHourFrom = (formId == "4") ? "09" : "18";
       }
       var defaultMinute = "00";
 
