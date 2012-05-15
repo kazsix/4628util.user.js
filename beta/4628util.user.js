@@ -100,6 +100,12 @@ function main() {
                                        + "&min=" + endMin;
         addHidden("application_form_master_id", $(this).attr("id"), "submit_form0");
         addHidden("status", "default", "submit_form0");
+        addHidden("start_date_Year", dispYear, "submit_form0");
+        addHidden("start_date_Month", dispMonth - 1, "submit_form0");
+        addHidden("start_date_Day", day, "submit_form0");
+        addHidden("end_date_Year", dispYear, "submit_form0");
+        addHidden("end_date_Month", dispMonth, "submit_form0");
+        addHidden("end_date_Day", day, "submit_form0");
         document.submit_form0.module.value = "application_form";
         document.submit_form0.action.value = "editor";
         document.submit_form0.submit();
