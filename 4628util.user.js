@@ -70,10 +70,10 @@ function main() {
           $("td", this).eq(5).html('<a href="javascript:void(0);" class="link_custom" id="15">遅延</a>');
         }
         if (startTime == "&nbsp;") {
-          $("td", this).eq(6).html('<a href="javascript:void(0);" class="link_custom" id="4">申請</a>');
+          $("td", this).eq(6).html('<a href="javascript:void(0);" class="link_custom" id="4">出勤</a>');
         }
         if (endTime == "&nbsp;") {
-          $("td", this).eq(7).html('<a href="javascript:void(0);" class="link_custom" id="4">申請</a>');
+          $("td", this).eq(7).html('<a href="javascript:void(0);" class="link_custom" id="4">退勤</a>');
         }
         if (zangyoStartTime == "&nbsp;" && endTime > defaultEndHour + ":30") {
           $("td", this).eq(10).html('<a href="javascript:void(0);" class="link_custom" id="1">残業</a>');
@@ -82,22 +82,26 @@ function main() {
 
       $(".link_custom").bind("click", function(){
         var day     = $("td", $(this).parent().parent()).eq(0).html();
-        var endTime = $("td", $(this).parent().parent()).eq(7).html();
-        var endHour = "";
-        var endMin  = "";
         
-        if (endTime.match(/\d\d:\d\d/)) {
-          endTime = endTime.split(':');
-          endHour = endTime[0];
-          endMin  = endTime[1];
+        // 年月日をクエリストリングに追加
+        var action = "./?year=" + dispYear
+                     + "&month=" + dispMonth
+                     + "&day=" + day;
+        
+        if ($(this).attr("id") == 1) {
+          // 残業申請の場合、退社時間をクエリストリングに追加
+          var endTime = $("td", $(this).parent().parent()).eq(7).html();
+          if (endTime.match(/\d\d:\d\d/)) {
+            endTime = endTime.split(':');
+            action += "&end_hour=" + endTime[0]
+                    + "&end_min=" + endTime[1];
+          }
         }
-        
-        // 年月日をクエリストリングに追加して申請画面へ移動
-        document.submit_form0.action = "./?year=" + dispYear
-                                       + "&month=" + dispMonth
-                                       + "&day=" + day
-                                       + "&hour=" + endHour
-                                       + "&min=" + endMin;
+        if ($(this).html().match(/\u9000\u52E4/)) {
+          // 退勤申請の場合、フラグをクエリストリングに追加
+          action += "&taikin=1";
+        }
+        document.submit_form0.action = action;
         addHidden("application_form_master_id", $(this).attr("id"), "submit_form0");
         addHidden("status", "default", "submit_form0");
         addHidden("start_date_Year", dispYear, "submit_form0");
@@ -108,6 +112,7 @@ function main() {
         addHidden("end_date_Day", day, "submit_form0");
         document.submit_form0.module.value = "application_form";
         document.submit_form0.action.value = "editor";
+        // 申請画面へ移動
         document.submit_form0.submit();
       });
 
@@ -182,33 +187,46 @@ function main() {
         changeDate(get.year, get.month, get.day);
       }
 
-      // 時間外申請とタイムカード訂正の場合
+      // 残業申請とタイムカード訂正の場合
       if (formId == "1" || formId == "4") {
 
         if (!$("#lbl_disp_reflect_date").attr("checked")) {
           // 計上日をデフォルト表示
           $("#lbl_disp_reflect_date").trigger("click");
-          if (get.hour && get.min) {
-            $("#submit_form").attr({action:"./?hour=" + get.hour + "&min=" + get.min});
+          if (get.end_hour && get.end_min) {
+            $("#submit_form").attr({action:"./?end_hour=" + get.end_hour + "&end_min=" + get.end_min});
           }
-          // 残業終了 or 退社の項目を追加(初回遷移時のみ)
-          $("#submit_form input[value=追加]").trigger("click");
+          if (formId == "1") {
+            // 残業終了時間を追加(初回遷移時のみ)
+            $("#submit_form input[value=追加]").trigger("click");
+          }
         }
 
         if (formId == "4") {
-          $('select[name=value_time_001_Hour]').val(defaultStartHour);
-        } else {
+          if (get.taikin == "1") {
+            // 退社を選択
+            $('select[name=reflect_item_id_001] option:last').attr("selected", "selected");
+            // 退社時間をセット
+            $('select[name=value_time_001_Hour]').val(defaultEndHour);
+          } else {
+            // 出社時間をセット
+            $('select[name=value_time_001_Hour]').val(defaultStartHour);
+          }
+        }
+        
+        if (formId == "1") {
+          // 残業終了を選択
+          $('select[name=reflect_item_id_002] option:last').attr("selected", "selected");
+          // 残業開始時間をセット
           $('select[name=value_time_001_Hour]').val(defaultEndHour);
+          if (get.end_hour && get.end_min) {
+            // 退勤時刻を残業終了時間にセット
+            $('select[name=value_time_002_Hour]').val(get.end_hour);
+            $('select[name=value_time_002_Minute]').val(get.end_min);
+          }
         }
+        
         $('select[name=value_time_001_Minute]').val("00");
-        if (get.hour && get.min) {
-          $('select[name=value_time_002_Hour]').val(get.hour);
-          $('select[name=value_time_002_Minute]').val(get.min);
-        }
-
-        // 申請内容(残業終了 or 退社)セット
-        $('select[name=reflect_item_id_002] option:last').attr("selected", "selected");
-
         $('textarea[name=application_remarks]').focus();
       }
     }
