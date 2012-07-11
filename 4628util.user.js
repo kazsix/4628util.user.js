@@ -44,10 +44,9 @@ function main() {
         var defaultEndHour   = "18";
       }
 
-      // ローカルストレージに保管されている設定を参照する
+      // ローカルストレージに保管
       window.localStorage.setItem("startHour", defaultStartHour);
       window.localStorage.setItem("endHour", defaultEndHour);
-      console.log("STORAGE STORE = " + defaultStartHour + "-" + defaultEndHour);
     }
     
     // 残業開始時間セット
