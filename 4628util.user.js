@@ -20,22 +20,65 @@ function addJQuery(callback) {
   document.body.appendChild(script);
 }
 
-
 // the guts of this userscript
 function main() {
 
   $(function() {
 
-    // 残業開始時間セット
-    if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
-      // 東京、京都タイム
-      var defaultStartHour = "10";
-      var defaultEndHour   = "19";
-    } else {
-      // 福岡タイム
-      var defaultStartHour = "09";
-      var defaultEndHour   = "18";
+    // 出勤簿を開いた際に始業・就業時間をローカルストレージに保持させる
+    if ($(".main_header").html() && $(".main_header").html().match(/\u51FA\u52E4\u7C3F/)) {
+
+      if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
+        if ($('#title_on0').html().match(/9\-18/)) {
+          // 東京タイム(09:00-18:00)
+          var defaultStartHour = "09";
+          var defaultEndHour   = "18";
+        } else {
+          // 東京、京都タイム(10:00-19:00)
+          var defaultStartHour = "10";
+          var defaultEndHour   = "19";
+        }
+      } else {
+        // 福岡タイム
+        var defaultStartHour = "09";
+        var defaultEndHour   = "18";
+      }
+
+      // ローカルストレージに保管されている設定を参照する
+      window.localStorage.setItem("startHour", defaultStartHour);
+      window.localStorage.setItem("endHour", defaultEndHour);
+      console.log("STORAGE STORE = " + defaultStartHour + "-" + defaultEndHour);
     }
+    
+    // 残業開始時間セット
+    var defaultStartHour = window.localStorage.getItem("startHour");
+    var defaultEndHour   = window.localStorage.getItem("endHour");
+
+    if (defaultStartHour == null) {
+      // ローカルストレージから取得できないため、地名のみで判定
+      if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
+        // 東京、京都タイム(10:00-19:00)
+        var defaultStartHour = "10";
+        var defaultEndHour   = "19";
+      } else {
+        // 福岡タイム
+        var defaultStartHour = "09";
+        var defaultEndHour   = "18";
+      }
+    }
+
+    if (defaultEndHour == null) {
+      if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
+        // 東京、京都タイム
+        var defaultStartHour = "10";
+        var defaultEndHour   = "19";
+      } else {
+        // 福岡タイム
+        var defaultStartHour = "09";
+        var defaultEndHour   = "18";
+      }
+    }
+
 
     // 出勤簿
     if ($(".main_header").html() && $(".main_header").html().match(/\u51FA\u52E4\u7C3F/)) {
