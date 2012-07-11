@@ -53,7 +53,7 @@ function main() {
     var defaultStartHour = window.localStorage.getItem("startHour");
     var defaultEndHour   = window.localStorage.getItem("endHour");
 
-    if (defaultStartHour == null) {
+    if (defaultStartHour == null || defaultEndHour == null) {
       // ローカルストレージから取得できないため、地名のみで判定
       if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
         // 東京、京都タイム(10:00-19:00)
@@ -65,19 +65,6 @@ function main() {
         var defaultEndHour   = "18";
       }
     }
-
-    if (defaultEndHour == null) {
-      if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
-        // 東京、京都タイム
-        var defaultStartHour = "10";
-        var defaultEndHour   = "19";
-      } else {
-        // 福岡タイム
-        var defaultStartHour = "09";
-        var defaultEndHour   = "18";
-      }
-    }
-
 
     // 出勤簿
     if ($(".main_header").html() && $(".main_header").html().match(/\u51FA\u52E4\u7C3F/)) {
