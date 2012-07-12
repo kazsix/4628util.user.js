@@ -20,21 +20,57 @@ function addJQuery(callback) {
   document.body.appendChild(script);
 }
 
-
 // the guts of this userscript
 function main() {
 
   $(function() {
 
+    // 出勤簿を開いた際に始業・就業時間をローカルストレージに保持させる
+    if ($(".main_header").html() && $(".main_header").html().match(/\u51FA\u52E4\u7C3F/)) {
+      var workingTime = $('#title_on0').html().match(/[0-9]+/g);
+      if (workingTime.length == 2) {
+        // "みなし（東京9-18）"といった形で始業時間が記載されている場合
+        for (i=0; i<workingTime.length; i++) {
+          fetchTime = workingTime[i];
+
+          if (fetchTime.length == 1) {
+            fetchTime = "0" + fetchTime;
+          } else if (fetchTime.length == 4) {
+            fetchTime = fetchTime.substr(0,2);
+          }
+
+          if (i==0) {
+            var defaultStartHour = fetchTime;
+          } else {
+            var defaultEndHour = fetchTime;
+          }
+        }
+      } else {
+        // 時間表記が無いので9:00-18:00を標準とする
+        var defaultStartHour = 9;
+        var defaultEndHour = 18;
+      }
+
+      // ローカルストレージに保管
+      window.localStorage.setItem("startHour", defaultStartHour);
+      window.localStorage.setItem("endHour", defaultEndHour);
+    }
+
     // 残業開始時間セット
-    if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
-      // 東京、京都タイム
-      var defaultStartHour = "10";
-      var defaultEndHour   = "19";
-    } else {
-      // 福岡タイム
-      var defaultStartHour = "09";
-      var defaultEndHour   = "18";
+    var defaultStartHour = window.localStorage.getItem("startHour");
+    var defaultEndHour   = window.localStorage.getItem("endHour");
+
+    if (defaultStartHour == null || defaultEndHour == null) {
+      // ローカルストレージから取得できないため、地名のみで判定
+      if ($('.user_name').html().match(/\u6771\u4eac|\u4eac\u90fd/)) {
+        // 東京、京都タイム(10:00-19:00)
+        var defaultStartHour = "10";
+        var defaultEndHour   = "19";
+      } else {
+        // 福岡タイム
+        var defaultStartHour = "09";
+        var defaultEndHour   = "18";
+      }
     }
 
     // 出勤簿
