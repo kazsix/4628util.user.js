@@ -111,7 +111,7 @@ function main() {
         if (endTime == "&nbsp;") {
           $("td", this).eq(7).html('<a href="javascript:void(0);" class="link_custom" id="4">退勤</a>');
         }
-        if (zangyoStartTime == "&nbsp;" && endTime > defaultEndHour + ":30") {
+        if (zangyoStartTime == "&nbsp;") {
           $("td", this).eq(10).html('<a href="javascript:void(0);" class="link_custom" id="1">残業</a>');
         }
       })
