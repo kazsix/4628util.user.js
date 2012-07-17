@@ -100,19 +100,24 @@ function main() {
         var jyokyoKbn       = $("td", this).eq(5).html();
         var startTime       = $("td", this).eq(6).html();
         var endTime         = $("td", this).eq(7).html();
+        var jitsudoTime = $("td", this).eq(9).html();
         var zangyoStartTime = $("td", this).eq(10).html();
         
         if (jyokyoKbn == "&nbsp;" && startTime > defaultStartHour + ":00") {
-          $("td", this).eq(5).html('<a href="javascript:void(0);" class="link_custom" id="15">遅延</a>');
+          $("td", this).eq(5).html('<a href="javascript:void(0);" class="link_custom" name="15">遅延</a>');
         }
         if (startTime == "&nbsp;") {
-          $("td", this).eq(6).html('<a href="javascript:void(0);" class="link_custom" id="4">出勤</a>');
+          $("td", this).eq(6).html('<a href="javascript:void(0);" class="link_custom" name="4">出勤</a>');
         }
         if (endTime == "&nbsp;") {
-          $("td", this).eq(7).html('<a href="javascript:void(0);" class="link_custom" id="4">退勤</a>');
+          $("td", this).eq(7).html('<a href="javascript:void(0);" class="link_custom" name="4">退勤</a>');
+        }
+        //男性と女性でIDが違うぽいので要確認-休暇欠勤申請(女性)は25
+        if(jitsudoTime !="&nbsp;" && jitsudoTime <"08:00"){
+          $("td", this).eq(4).append('<a href="javascript:void(0);" class="link_custom" name="25">休暇申請</a>');
         }
         if (zangyoStartTime == "&nbsp;") {
-          $("td", this).eq(10).html('<a href="javascript:void(0);" class="link_custom" id="1">残業</a>');
+          $("td", this).eq(10).html('<a href="javascript:void(0);" class="link_custom" name="1">残業</a>');
         }
       })
 
@@ -138,7 +143,7 @@ function main() {
           action += "&taikin=1";
         }
         document.submit_form0.action = action;
-        addHidden("application_form_master_id", $(this).attr("id"), "submit_form0");
+        addHidden("application_form_master_id", $(this).attr("name"), "submit_form0");
         addHidden("status", "default", "submit_form0");
         addHidden("start_date_Year", dispYear, "submit_form0");
         addHidden("start_date_Month", dispMonth - 1, "submit_form0");
