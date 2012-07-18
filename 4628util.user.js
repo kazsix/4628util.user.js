@@ -78,8 +78,23 @@ function main() {
       var date = new Date();
       var nowYmd  = date.getFullYear() + ("0" + (date.getMonth() + 1)).slice(-2) + ("0" + date.getDate()).slice(-2);
       var dispYear = document.submit_form0.Date_Year.value;
-      var dispMonth = document.submit_form0.Date_Month.value;
-      
+      var dispMonth = document.submit_form0.Date_Month.value; 
+       var KyukaId=0;
+      //休暇申請のIDを取得し、設定する
+      $("#main_header_area").append('<div id="get_selecter" style="display:none;"></div>');//見えないdivを作成
+      $("#get_selecter").load("./ #slct_appformmasterid:first",//IDが重複しているので先頭の1個だけ取る
+           { module: "application_form", action: "application_form" },
+           function(){
+		      $('#slct_appformmasterid option').each(function() {
+		         var value = jQuery(this).val();
+		         var text = jQuery(this).text();
+		         //25は女性用、31は男性用
+		         if(value==25 || value==31)KyukaId=value;
+		      });
+		      //仮でKyukaIdとnameつけた部分を書き換え
+		      $(".link_custom[name='KyukaId']").attr("name",KyukaId);
+           }
+       );
       $('tr[id^=fix]').each(function(index) {
         
         var loopDay  = $("td", this).eq(0).html();
@@ -89,19 +104,28 @@ function main() {
         if (loopYmd == nowYmd) {
           $(this).css("background-color", "#E2FAC1");
         }
-        // 未来日付は処理しない
-        if (loopYmd > nowYmd) {
-          return true;
-        }
+
         // 平日以外は処理しない
         if ($("td", this).eq(2).html() != "\u5E73\u65E5") {
           return true;
         }
+
+        //休暇欠勤申請のリンクを表示
+        var todokedeNy        =  $("td", this).eq(4).html();
+        if(todokedeNy=="&nbsp;"){
+          $("td", this).eq(4).append('<a href="javascript:void(0);" class="link_custom" name="KyukaId">休暇申請</a>');
+        }
+
+        // 未来日付は処理しない
+        if (loopYmd > nowYmd) {
+          return true;
+        }
+
         var jyokyoKbn       = $("td", this).eq(5).html();
         var startTime       = $("td", this).eq(6).html();
         var endTime         = $("td", this).eq(7).html();
-        var jitsudoTime = $("td", this).eq(9).html();
         var zangyoStartTime = $("td", this).eq(10).html();
+
         
         if (jyokyoKbn == "&nbsp;" && startTime > defaultStartHour + ":00") {
           $("td", this).eq(5).html('<a href="javascript:void(0);" class="link_custom" name="15">遅延</a>');
@@ -111,10 +135,6 @@ function main() {
         }
         if (endTime == "&nbsp;") {
           $("td", this).eq(7).html('<a href="javascript:void(0);" class="link_custom" name="4">退勤</a>');
-        }
-        //男性と女性でIDが違うぽいので要確認-休暇欠勤申請(女性)は25
-        if(jitsudoTime !="&nbsp;" && jitsudoTime <"08:00"){
-          $("td", this).eq(4).append('<a href="javascript:void(0);" class="link_custom" name="25">休暇申請</a>');
         }
         if (zangyoStartTime == "&nbsp;") {
           $("td", this).eq(10).html('<a href="javascript:void(0);" class="link_custom" name="1">残業</a>');
