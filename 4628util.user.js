@@ -149,7 +149,7 @@ function main() {
                      + "&month=" + dispMonth
                      + "&day=" + day;
         
-        if ($(this).attr("id") == 1) {
+        if ($(this).attr("name") == 1) {
           // 残業申請の場合、退社時間をクエリストリングに追加
           var endTime = $("td", $(this).parent().parent()).eq(7).html();
           if (endTime.match(/\d\d:\d\d/)) {
