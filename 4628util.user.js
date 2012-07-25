@@ -76,25 +76,26 @@ function main() {
     // 出勤簿
     if ($(".main_header").html() && $(".main_header").html().match(/\u51FA\u52E4\u7C3F/)) {
       var date = new Date();
-      var nowYmd  = date.getFullYear() + ("0" + (date.getMonth() + 1)).slice(-2) + ("0" + date.getDate()).slice(-2);
+      var nowYmd = date.getFullYear() + ("0" + (date.getMonth() + 1)).slice(-2) + ("0" + date.getDate()).slice(-2);
       var dispYear = document.submit_form0.Date_Year.value;
       var dispMonth = document.submit_form0.Date_Month.value; 
-       var KyukaId=0;
-      //休暇申請のIDを取得し、設定する
-      $("#main_header_area").append('<div id="get_selecter" style="display:none;"></div>');//見えないdivを作成
-      $("#get_selecter").load("./ #slct_appformmasterid:first",//IDが重複しているので先頭の1個だけ取る
-           { module: "application_form", action: "application_form" },
-           function(){
-		      $('#slct_appformmasterid option').each(function() {
-		         var value = jQuery(this).val();
-		         var text = jQuery(this).text();
-		         //25は女性用、31は男性用
-		         if(value==25 || value==31)KyukaId=value;
-		      });
-		      //仮でKyukaIdとnameつけた部分を書き換え
-		      $(".link_custom[name='KyukaId']").attr("name",KyukaId);
-           }
-       );
+      var KyukaId = 0;
+      
+      // 休暇申請のIDを取得し、設定する
+      $("#main_header_area").append('<div id="get_selecter" style="display:none;"></div>'); // 見えないdivを作成
+      $("#get_selecter").load("./ #slct_appformmasterid:first", // IDが重複しているので先頭の1個だけ取る
+        { module: "application_form", action: "application_form" },
+        function(){
+          $('#slct_appformmasterid option').each(function() {
+             var value = jQuery(this).val();
+             var text = jQuery(this).text();
+             // 25は女性用、31は男性用
+             if (value == 25 || value == 31) KyukaId=value;
+          });
+          // 仮でKyukaIdとnameつけた部分を書き換え
+          $(".link_custom[name='KyukaId']").attr("name",KyukaId);
+        }
+      );
       $('tr[id^=fix]').each(function(index) {
         
         var loopDay  = $("td", this).eq(0).html();
