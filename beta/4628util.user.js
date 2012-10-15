@@ -27,7 +27,11 @@ function main() {
 
     // 出勤簿を開いた際に始業・就業時間をローカルストレージに保持させる
     if ($(".main_header").html() && $(".main_header").html().match(/\u51FA\u52E4\u7C3F/)) {
-      var workingTime = $('#title_on0').html().match(/[0-9]+/g);
+      if ($('#title_on1').length) {
+        var workingTime = $('#title_on1').html().match(/[0-9]+/g);
+      } else {
+        var workingTime = $('#title_on0').html().match(/[0-9]+/g);
+      }
       if (workingTime.length == 2) {
         // "みなし（東京9-18）"といった形で始業時間が記載されている場合
         for (i=0; i<workingTime.length; i++) {
@@ -76,10 +80,26 @@ function main() {
     // 出勤簿
     if ($(".main_header").html() && $(".main_header").html().match(/\u51FA\u52E4\u7C3F/)) {
       var date = new Date();
-      var nowYmd  = date.getFullYear() + ("0" + (date.getMonth() + 1)).slice(-2) + ("0" + date.getDate()).slice(-2);
+      var nowYmd = date.getFullYear() + ("0" + (date.getMonth() + 1)).slice(-2) + ("0" + date.getDate()).slice(-2);
       var dispYear = document.submit_form0.Date_Year.value;
-      var dispMonth = document.submit_form0.Date_Month.value;
+      var dispMonth = document.submit_form0.Date_Month.value; 
+      var KyukaId = 0;
       
+      // 休暇申請のIDを取得し、設定する
+      $("#main_header_area").append('<div id="get_selecter" style="display:none;"></div>'); // 見えないdivを作成
+      $("#get_selecter").load("./ #slct_appformmasterid:first", // IDが重複しているので先頭の1個だけ取る
+        { module: "application_form", action: "application_form" },
+        function(){
+          $('#slct_appformmasterid option').each(function() {
+             var value = jQuery(this).val();
+             var text = jQuery(this).text();
+             // 25は女性用、31は男性用
+             if (value == 25 || value == 31) KyukaId=value;
+          });
+          // 仮でKyukaIdとnameつけた部分を書き換え
+          $(".link_custom[name='KyukaId']").attr("name",KyukaId);
+        }
+      );
       $('tr[id^=fix]').each(function(index) {
         
         var loopDay  = $("td", this).eq(0).html();
@@ -89,30 +109,40 @@ function main() {
         if (loopYmd == nowYmd) {
           $(this).css("background-color", "#E2FAC1");
         }
-        // 未来日付は処理しない
-        if (loopYmd > nowYmd) {
-          return true;
-        }
+
         // 平日以外は処理しない
         if ($("td", this).eq(2).html() != "\u5E73\u65E5") {
           return true;
         }
+
+        //休暇欠勤申請のリンクを表示
+        var todokedeNy        =  $("td", this).eq(4).html();
+        if(todokedeNy=="&nbsp;"){
+          $("td", this).eq(4).append('<a href="javascript:void(0);" class="link_custom" name="KyukaId">休暇申請</a>');
+        }
+
+        // 未来日付は処理しない
+        if (loopYmd > nowYmd) {
+          return true;
+        }
+
         var jyokyoKbn       = $("td", this).eq(5).html();
         var startTime       = $("td", this).eq(6).html();
         var endTime         = $("td", this).eq(7).html();
         var zangyoStartTime = $("td", this).eq(10).html();
+
         
         if (jyokyoKbn == "&nbsp;" && startTime > defaultStartHour + ":00") {
-          $("td", this).eq(5).html('<a href="javascript:void(0);" class="link_custom" id="15">遅延</a>');
+          $("td", this).eq(5).html('<a href="javascript:void(0);" class="link_custom" name="15">遅延</a>');
         }
         if (startTime == "&nbsp;") {
-          $("td", this).eq(6).html('<a href="javascript:void(0);" class="link_custom" id="4">出勤</a>');
+          $("td", this).eq(6).html('<a href="javascript:void(0);" class="link_custom" name="4">出勤</a>');
         }
         if (endTime == "&nbsp;") {
-          $("td", this).eq(7).html('<a href="javascript:void(0);" class="link_custom" id="4">退勤</a>');
+          $("td", this).eq(7).html('<a href="javascript:void(0);" class="link_custom" name="4">退勤</a>');
         }
         if (zangyoStartTime == "&nbsp;") {
-          $("td", this).eq(10).html('<a href="javascript:void(0);" class="link_custom" id="1">残業</a>');
+          $("td", this).eq(10).html('<a href="javascript:void(0);" class="link_custom" name="1">残業</a>');
         }
       })
 
@@ -124,7 +154,7 @@ function main() {
                      + "&month=" + dispMonth
                      + "&day=" + day;
         
-        if ($(this).attr("id") == 1) {
+        if ($(this).attr("name") == 1) {
           // 残業申請の場合、退社時間をクエリストリングに追加
           var endTime = $("td", $(this).parent().parent()).eq(7).html();
           if (endTime.match(/\d\d:\d\d/)) {
@@ -138,7 +168,7 @@ function main() {
           action += "&taikin=1";
         }
         document.submit_form0.action = action;
-        addHidden("application_form_master_id", $(this).attr("id"), "submit_form0");
+        addHidden("application_form_master_id", $(this).attr("name"), "submit_form0");
         addHidden("status", "default", "submit_form0");
         addHidden("start_date_Year", dispYear, "submit_form0");
         addHidden("start_date_Month", dispMonth - 1, "submit_form0");
