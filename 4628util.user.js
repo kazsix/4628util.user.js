@@ -27,7 +27,11 @@ function main() {
 
     // 出勤簿を開いた際に始業・就業時間をローカルストレージに保持させる
     if ($(".main_header").html() && $(".main_header").html().match(/\u51FA\u52E4\u7C3F/)) {
-      var workingTime = $('#title_on0').html().match(/[0-9]+/g);
+      if ($('#title_on1').length) {
+        var workingTime = $('#title_on1').html().match(/[0-9]+/g);
+      } else {
+        var workingTime = $('#title_on0').html().match(/[0-9]+/g);
+      }
       if (workingTime.length == 2) {
         // "みなし（東京9-18）"といった形で始業時間が記載されている場合
         for (i=0; i<workingTime.length; i++) {
