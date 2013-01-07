@@ -102,7 +102,7 @@ function main() {
       );
       $('tr[id^=fix]').each(function(index) {
         
-        var loopDay  = $("td", this).eq(0).html();
+        var loopDay  = $.trim($("td", this).eq(0).html());
         var loopYmd = dispYear + ("0" + dispMonth).slice(-2) + ("0" + loopDay).slice(-2);
         
         // 当日に色付け
@@ -111,12 +111,13 @@ function main() {
         }
 
         // 平日以外は処理しない
-        if ($("td", this).eq(2).html() != "\u5E73\u65E5") {
+        if (!$("td", this).eq(2).html().match(/\u5E73\u65E5/)) {
           return true;
         }
 
         //休暇欠勤申請のリンクを表示
-        var todokedeNy        =  $("td", this).eq(4).html();
+        var todokedeNy = $.trim($("td", this).eq(4).html());
+
         if(todokedeNy=="&nbsp;"){
           $("td", this).eq(4).append('<a href="javascript:void(0);" class="link_custom" name="KyukaId">休暇申請</a>');
         }
@@ -126,12 +127,11 @@ function main() {
           return true;
         }
 
-        var jyokyoKbn       = $("td", this).eq(5).html();
-        var startTime       = $("td", this).eq(6).html();
-        var endTime         = $("td", this).eq(7).html();
-        var zangyoStartTime = $("td", this).eq(10).html();
+        var jyokyoKbn       = $.trim($("td", this).eq(5).html());
+        var startTime       = $.trim($("td", this).eq(6).html());
+        var endTime         = $.trim($("td", this).eq(7).html());
+        var zangyoStartTime = $.trim($("td", this).eq(10).html());
 
-        
         if (jyokyoKbn == "&nbsp;" && startTime > defaultStartHour + ":00") {
           $("td", this).eq(5).html('<a href="javascript:void(0);" class="link_custom" name="15">遅延</a>');
         }
@@ -147,7 +147,7 @@ function main() {
       })
 
       $(".link_custom").bind("click", function(){
-        var day     = $("td", $(this).parent().parent()).eq(0).html();
+        var day     = $.trim($("td", $(this).parent().parent()).eq(0).html());
         
         // 年月日をクエリストリングに追加
         var action = "./?year=" + dispYear
@@ -156,7 +156,7 @@ function main() {
         
         if ($(this).attr("name") == 1) {
           // 残業申請の場合、退社時間をクエリストリングに追加
-          var endTime = $("td", $(this).parent().parent()).eq(7).html();
+          var endTime = $.trim($("td", $(this).parent().parent()).eq(7).html());
           if (endTime.match(/\d\d:\d\d/)) {
             endTime = endTime.split(':');
             action += "&end_hour=" + endTime[0]
