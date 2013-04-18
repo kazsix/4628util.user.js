@@ -4,8 +4,7 @@
 // @description    日付の自動入力、カスタムボタンの追加など、4628システムの入力を支援
 // @include        http://www.4628.jp/*
 // @include        https://www.4628.jp/*
-// @match          http://www.4628.jp/*
-// @match          https://www.4628.jp/*
+// @include        https://4628.tokyo.pb/*
 // ==/UserScript==
 
 // a function that loads jQuery and calls a callback function when jQuery has finished loading
