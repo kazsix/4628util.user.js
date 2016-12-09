@@ -140,7 +140,7 @@ function main() {
           var zangyoStartTime = $.trim($("td", this).eq(10).html());
 
           if (jyokyoKbn == "&nbsp;" && startTime > defaultStartHour + ":00") {
-            $("td", this).eq(5).html('<a href="javascript:void(0);" class="link_custom" name="15">遅延</a>');
+            $("td", this).eq(5).html('<a href="javascript:void(0);" class="link_custom" name="4">遅延</a>');
           }
           if (startTime == "&nbsp;") {
             $("td", this).eq(6).html('<a href="javascript:void(0);" class="link_custom" name="4">出勤</a>');
